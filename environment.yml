@@ -1,0 +1,25 @@
+name: projet_synthese
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - black
+  - flake8
+  - isort
+  - pip
+  - typer
+  - loguru
+  - tqdm
+  - pip:
+    - python-dotenv
+    - mkdocs
+    - -e .
+    - matplotlib
+    - pandas
+    - numpy
+    - seaborn
+    - scikit-learn
+    - mlflow
+    - evidently
+    - nannyml
+    - dvc[gdrive]
