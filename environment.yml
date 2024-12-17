@@ -23,3 +23,5 @@ dependencies:
     - evidently
     - nannyml
     - dvc[gdrive]
+    - tensorflow
+    - keras
