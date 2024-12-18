@@ -5,7 +5,7 @@
 .DS_Store
 
 # Credentials
-client_secret.json
+.gdrive/
 
 # vim
 *.swp
