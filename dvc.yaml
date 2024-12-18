@@ -1,0 +1,8 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - data/raw/brain-tumor-mri-dataset/
+      - src/preprocess.py
+    outs:
+      - data/processed/brain-tumor-mri-dataset-processed/

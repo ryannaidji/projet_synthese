@@ -4,6 +4,9 @@
 # Mac OS-specific storage files
 .DS_Store
 
+# Credentials
+client_secret.json
+
 # vim
 *.swp
 *.swo
