@@ -3,6 +3,9 @@
 !data/*.dvc
 !data/**/.gitignore
 
+frontend/upload
+frontend/static/upload
+
 # Mac OS-specific storage files
 .DS_Store
 

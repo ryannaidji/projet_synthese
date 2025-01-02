@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnostics List{% endblock %}
+
+{% block content %}
+<div class="container mt-6 card">
+    <h2 class="text-center mb-4">Diagnostics List</h2>
+
+    <!-- Diagnostics Table -->
+    <table id="diagnosticsTable" class="table table-dark" data-filter-control="true" data-show-columns="true" data-search="true">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Analysis</th>
+                <th>Prediction</th>
+                <th>Comment</th>
+                <th>Status</th>
+                <th>Doctor</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for diagnostic in diagnostics %}
+            <tr>
+                <td>{{ diagnostic.date_of_prediction }}</td>
+                <td>{{ diagnostic.patient_name }}</td>
+                <td><a href="#" class="btn btn-info btn-sm">View Result</a></td>
+                <td>{{ diagnostic.prediction_probability }}%</td>
+                <td>{{ diagnostic.reviewed_comment }}</td>
+                <td>
+                    {% if diagnostic.review_status == "Reviewed" %}
+                        <span class="badge badge-success">{{ diagnostic.review_status }}</span>
+                    {% else %}
+                        <span class="badge badge-warning">{{ diagnostic.review_status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ diagnostic.doctor_name }}</td>
+                <td>
+                    <a href="#" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit fa-sm"></i>
+                    </a>
+                <form action="{{ url_for('delete_diagnostic', id=diagnostic.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this diagnostic?');"><i class="fas fa-trash-alt"></i></button>
+                </form>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Add New Diagnostic Button -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('upload_form') }}" class="btn btn-success btn-lg">Add New Diagnostic</a>
+    </div>
+</div>
+    <script>
+        $(document).ready(function() {
+            $('#diagnosticsTable').bootstrapTable();
+        });
+    </script>
+{% endblock %}
+
