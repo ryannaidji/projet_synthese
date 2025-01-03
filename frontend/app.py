@@ -3,8 +3,7 @@ from werkzeug.utils import secure_filename
 from flask import Flask, render_template, redirect, url_for, flash, abort, request, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from decorators import role_required
-from models import mock_diagnostics
-from models import db, Patient, User
+from models import db, Patient, User, Diagnostic
 from datetime import datetime
 
 from flask import request, jsonify
@@ -36,7 +35,7 @@ def create_admin():
 
     # Create an admin user
     hashed_password = generate_password_hash('adminpassword', method='pbkdf2:sha256')  # Make sure to change the password
-    admin = User(username='admin', email='admin@example.com', password=hashed_password, role='admin')
+    admin = User(username='admin', email='admin@example.com', fullname="admin", password=hashed_password, role='admin')
 
     db.session.add(admin)
     db.session.commit()
@@ -85,7 +84,7 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash('Login successful!', 'success')
-            return redirect(url_for('upload_form'))
+            return redirect(url_for('create_diagnostic'))
         else:
             flash('Invalid credentials', 'danger')
 
@@ -101,47 +100,71 @@ def logout():
 def forbidden(e):
     return render_template("403.html"), 403
 
-@app.route('/upload_form')
 @login_required
-@role_required("admin","doctor","nurse")
-def upload_form():
+@role_required("doctor","nurse","admin")
+@app.route('/diagnostic/<int:diagnostic_id>', methods=['GET'])
+def show_diagnostic(diagnostic_id):
+    diagnostic = Diagnostic.query.get_or_404(diagnostic_id)
+    return render_template('result.html', diagnostic=diagnostic)
+
+@app.route('/diagnostic/add', methods=['GET','POST'])
+@login_required
+@role_required("doctor","nurse","admin")
+def create_diagnostic():
+    if request.method == 'POST':
+
+        if 'file' not in request.files:
+          return render_template('upload.html', error="No file part")
+        
+        file = request.files['file']
+
+        if file.filename == '':
+          return render_template('upload.html', error="No selected file")
+
+        if file and allowed_file(file.filename):
+          filename = secure_filename(file.filename)
+          filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+          file.save(filepath)
+        else:
+            return render_template('upload.html', error="Invalid file type")
+        
+        now = datetime.now()
+        patient_id = request.form['patient']
+        analysis_link = filepath
+        prediction = "TBD"
+        comment = ""
+        status = False
+        doctor_id = request.form['doctor']
+
+        new_diagnostic = Diagnostic(
+            patient_id=patient_id,
+            analysis_link=analysis_link,
+            prediction=prediction,
+            reviewed_comment=comment,
+            review_status=status,
+            doctor_id=doctor_id
+        )
+        db.session.add(new_diagnostic)
+        db.session.commit()
+
+        result = "TBD"
+
+        return redirect(url_for('show_diagnostic', diagnostic_id=new_diagnostic.id))
+
+    # Fetch all patients for the form dropdown
     patients = Patient.query.all()
-    return render_template('upload.html', patients=patients)
+    doctors = User.query.filter_by(role="doctor").all()
+    return render_template('upload.html', patients=patients, doctors=doctors)
 
-@app.route('/predict', methods=['POST'])
-def upload_file():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
-    if 'file' not in request.files:
-        return render_template('upload.html', error="No file part")
-
-    file = request.files['file']
-
-    if file.filename == '':
-        return render_template('upload.html', error="No selected file")
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-
-        # Placeholder for brain tumor detection logic
-        # Replace with model prediction logic
-        result = "Tumor detected" if "tumor" in filename.lower() else "No tumor detected"
-
-        return render_template('result.html', image_url=filepath,probability=50, result=result, patient_name="John Doe")
-
-    return render_template('upload.html', error="Invalid file type")
 
 from flask import request, render_template, redirect, url_for, flash
 from models import User, db
 from werkzeug.security import generate_password_hash
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username')
+        fullname = request.form.get('fullname')
         email = request.form.get('email')
         password = request.form.get('password')
         role = request.form.get('role', 'nurse')  # Default to 'user' if no role is provided
@@ -159,7 +182,7 @@ def register():
             return render_template('register.html', error="Passwords do not match.")
 
         hashed_password = generate_password_hash(password)
-        new_user = User(username=username, email=email, password=hashed_password, role=role)
+        new_user = User(username=username, email=email, fullname=fullname, password=hashed_password, role=role)
         db.session.add(new_user)
         db.session.commit()
 
@@ -173,13 +196,33 @@ def register():
 def add_user():
     return render_template('register.html', action_url=url_for('register'), button_text="Add User", title_text="Add New User")
 
-
 @app.route('/admin/diagnostics', methods=['GET'])
 @login_required
 @role_required("admin","doctor","nurse")
 def diagnostics():
-    
-    return render_template('diagnostics.html', diagnostics=mock_diagnostics)
+    diagnostics = Diagnostic.query.all()
+    return render_template('diagnostics.html', diagnostics=diagnostics)
+
+def to_boolean(value):
+    return value == 'on'
+
+@app.route('/admin/diagnostic/edit/<int:diagnostic_id>', methods=['GET', 'POST'])
+@login_required
+@role_required("doctor","admin","nurse")
+def edit_diagnostic(diagnostic_id):
+    diagnostic = Diagnostic.query.get_or_404(diagnostic_id)
+
+    if request.method == 'POST':
+        review_status = request.form.get('review_status')
+        is_reviewed = review_status == 'on'
+        diagnostic.review_status = is_reviewed
+        diagnostic.reviewed_comment = request.form["reviewed_comment"]
+        db.session.add(diagnostic)
+        db.session.commit()
+        return redirect(url_for('diagnostics'))
+
+    return redirect(url_for('show_diagnostic', diagnostic_id=diagnostic.id))
+
 
 @app.route('/admin/patients')
 @login_required
@@ -238,11 +281,10 @@ def delete_patient(id):
 @role_required("admin","doctor")
 def delete_diagnostic(id):
     diagnostic = Diagnostic.query.get_or_404(id)
-    db.session.delete(patient)
+    db.session.delete(diagnostic)
     db.session.commit()
     flash("Diagnostic deleted successfully!")
-    return redirect(url_for("admin_diagnostics"))
-
+    return redirect(url_for("diagnostics"))
 
 @app.route('/admin/users')
 @login_required
@@ -260,6 +302,7 @@ def edit_user(user_id):
     if request.method == 'POST':
         user.username = request.form['username']
         user.email = request.form['email']
+        user.fullname = request.form['fullname']
         if request.form['password']:
             hashed_password = generate_password_hash(request.form['password'])
             user.password = hashed_password
@@ -275,7 +318,6 @@ def edit_user(user_id):
         button_text="Update User",
         title_text="Edit User"
     )
-
 
 @app.route('/admin/users/delete/<int:user_id>', methods=['POST'])
 @login_required

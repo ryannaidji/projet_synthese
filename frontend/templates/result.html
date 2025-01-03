@@ -1,47 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Prediction Result{% endblock %}
+{% block title %}Diagnostic Result{% endblock %}
 
 {% block content %}
 <div class="card p-4  col-md-6" style="max-width: 800px; margin: 0 auto;">
-    <h2 class="text-center mb-4">Prediction Result</h2>
+    <h2 class="text-center mb-4">Diagnostic  Result</h2>
 
     <!-- Patient Name -->
-    <p><strong>Patient Name:</strong> {{ patient_name }}</p>
+    <p><strong>Patient Name:</strong> {{ diagnostic.patient.name }}</p>
+    <p><strong>Doctor Name:</strong> {{ diagnostic.user.fullname }}</p>
 
     <!-- Uploaded Image -->
     <div class="text-center mb-4">
-        <img src="{{ image_url }}" alt="Uploaded MRI Image" style="max-width: 80%; height: auto; border: 1px solid #ddd; padding: 5px; border-radius: 5px;">
+        <img src="/{{ diagnostic.analysis_link }}" alt="Uploaded MRI Image" style="max-width: 80%; height: auto; border: 1px solid #ddd; padding: 5px; border-radius: 5px;">
     </div>
 
     <!-- Prediction Result -->
     <div class="alert alert-info text-center">
-        <h4>Prediction: {{ prediction }}</h4>
-        <p>Probability: {{ probability }}%</p>
+        <h4>Prediction: {{ diagnostic.prediction }}</h4>
     </div>
 
-    <!-- Opinion Form (visible only to doctors and admins) -->
-    {% if user_role in ['doctor', 'admin'] %}
+    {% if current_user.role in ['doctor', 'admin'] %}
     <div class="mt-4">
         <h4>Provide Your Opinion</h4>
-        <form action="/add_opinion" method="POST">
-            <input type="hidden" name="patient_id" value="{{ patient_id }}">
-            <input type="hidden" name="prediction_id" value="{{ prediction_id }}">
+	<form action="/admin/diagnostic/edit/{{ diagnostic.id }}" method="POST">
 
             <div class="form-group">
-                <textarea name="opinion" class="form-control" rows="4" placeholder="Enter your opinion about the prediction..." required></textarea>
+                <textarea name="reviewed_comment" id="reviewed_comment" class="form-control" rows="4" required>{{ diagnostic.reviewed_comment }}</textarea>
             </div>
 
 	    <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="reviewed" name="reviewed">
-                <label for="reviewed" class="form-check-label">Mark as Reviewed</label>
+                <input {% if diagnostic.review_status %}checked{% endif %} type="checkbox" class="form-check-input" id="review_status" name="review_status">
+                <label for="review_status" class="form-check-label">Mark as Reviewed</label>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">Submit Opinion</button>
         </form>
     </div>
     {% endif %}
-    <a href="/upload_form" class="btn btn-login mt-4">Try Another Image</a>
+    <a href="/diagnostic/add" class="btn btn-login mt-4">Try Another Image</a>
 </div>
 {% endblock %}
 

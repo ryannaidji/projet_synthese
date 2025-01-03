@@ -9,7 +9,7 @@
             <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
 
-    <form action="/predict" method="POST" enctype="multipart/form-data">
+    <form action="/diagnostic/add" method="POST" enctype="multipart/form-data">
         <!-- Dropdown for patient selection -->
         <div class="form-group">
             <label for="patient">Select Patient:</label>
@@ -17,6 +17,16 @@
                 <option value="" disabled selected>Choose a patient</option>
             {% for patient in patients %}
                 <option value="{{ patient.id }}">{{ patient.name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="doctor">Select Doctor:</label>
+            <select name="doctor" id="doctor" class="form-control" required>
+                <option value="" disabled selected>Choose a doctor</option>
+            {% for doctor in doctors %}
+                <option value="{{ doctor.id }}">{{ doctor.fullname }}</option>
             {% endfor %}
             </select>
         </div>
