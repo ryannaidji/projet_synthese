@@ -52,6 +52,7 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-auto">
 	            {% if current_user.is_authenticated %}
+		    <li class="nav-item nav-link">Hello, {{ current_user.username }}</li>
 		    {% if current_user.role == 'admin' %}
                     <li class="nav-item"><a class="nav-link" href="/admin/users">Users</a></li>
 		    {% endif %}

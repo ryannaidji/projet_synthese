@@ -6,8 +6,12 @@ from decorators import role_required
 from models import db, Patient, User, Diagnostic
 from datetime import datetime
 
-from flask import request, jsonify
+from flask import jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+import requests
+
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask import jsonify
 
 app = Flask(__name__)
 
@@ -16,6 +20,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///patients.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["JWT_SECRET_KEY"] = 'your_jwt_secret_key'
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'your_secret_key'  # Replace with a strong secret key
@@ -25,6 +31,8 @@ db.init_app(app)  # Initialize db with the app
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"  # Redirect users to 'login' if not logged in
+
+jwt = JWTManager(app)
 
 @app.route('/create-admin')
 def create_admin():
@@ -83,6 +91,7 @@ def login():
 
         if user and check_password_hash(user.password, password):
             login_user(user)
+            access_token = create_access_token(identity=user.id)
             flash('Login successful!', 'success')
             return redirect(url_for('create_diagnostic'))
         else:
