@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Upload MRI Image{% endblock %}
+
+{% block content %}
+<div class="card p-4 col-md-6" style="max-width: 500px; margin: 0 auto;">
+    <h2 class="text-center mb-4">Upload MRI Image</h2>
+            {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+    <form action="/diagnostic/add" method="POST" enctype="multipart/form-data">
+        <!-- Dropdown for patient selection -->
+        <div class="form-group">
+            <label for="patient">Select Patient:</label>
+            <select name="patient" id="patient" class="form-control" required>
+                <option value="" disabled selected>Choose a patient</option>
+            {% for patient in patients %}
+                <option value="{{ patient.id }}">{{ patient.name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="doctor">Select Doctor:</label>
+            <select name="doctor" id="doctor" class="form-control" required>
+                <option value="" disabled selected>Choose a doctor</option>
+            {% for doctor in doctors %}
+                <option value="{{ doctor.id }}">{{ doctor.fullname }}</option>
+            {% endfor %}
+            </select>
+        </div>
+
+        <!-- File input for MRI image -->
+        <div class="form-group">
+            <label for="image">Upload MRI Scan:</label>
+            <input type="file" name="file" id="file" class="form-control" required>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-login btn-block">Predict</button>
+    </form>
+</div>
+{% endblock %}
+
+

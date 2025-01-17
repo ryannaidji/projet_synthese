@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Patients{% endblock %}
+
+{% block content %}
+<div class="container mt-5 card">
+    <h2 class="text-center mb-4">Registered Patients</h2>
+
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date of Birth</th>
+            <th>Gender</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.id }}</td>
+            <td>{{ patient.name }}</td>
+            <td>{{ patient.dob }}</td>
+            <td>{{ patient.gender }}</td>
+            <td>{{ patient.address }}</td>
+            <td>{{ patient.phone }}</td>
+            <td>
+                <a href="{{ url_for('edit_patient', id=patient.id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                <form action="{{ url_for('delete_patient', id=patient.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('add_patient') }}" class="btn btn-success btn-lg">Add New Patient</a>
+    </div>
+
+</div>
+{% endblock %}
+
