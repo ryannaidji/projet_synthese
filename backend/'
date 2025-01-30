@@ -1,0 +1,110 @@
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy import Column, Integer, String, Date, create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from pydantic import BaseModel
+import prometheus_client
+import sqlalchemy
+#from models import db, Patient
+
+app = FastAPI()
+
+# Database setup
+DATABASE_URL = "sqlite:///./brain_detector2.db"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = sqlalchemy.orm.declarative_base()
+
+#db.init_app(app)
+
+#class Patient(Base):
+#    __tablename__ = "patients"
+#    id = Column(Integer, primary_key=True, index=True)
+#    full_name = Column(String, index=True)
+#    date_of_birth = Column(String)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+class Patient(Base):
+    __tablename__ = "patients"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    dob = Column(Date, nullable=False)  # Date of Birth
+    gender = Column(String(10), nullable=False)
+    phone = Column(String(20), nullable=True)
+    address = Column(String(100), nullable=False)
+    #created_at = Column(DateTime, default=db.func.current_timestamp())
+
+Base.metadata.create_all(bind=engine)
+
+# Pydantic model for response data
+class ItemResponse(BaseModel):
+    id: int
+    name: str
+    dob: str
+    gender: str
+    phone: str
+    address: str
+
+# Pydantic model for request data
+class ItemCreate(BaseModel):
+    name: str
+    dob: str
+    gender: str
+    phone: str
+    address: str
+
+
+@app.get("/api/patients")
+async def list_patients(db: Session = Depends(get_db)):
+    return db.query(Patient).all()
+
+# API endpoint to create an item
+@app.post("/api/patients/add", response_model=ItemResponse)
+async def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    db_item = Patient(**item.model_dump())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+#@app.post("/patients", response_model=PatientOut)
+#async def add_patient(patient: PatientCreate, db: SessionLocal = Depends(get_db)):
+#    db_patient = Patient(**patient.dict())
+#    db.add(db_patient)
+#    db.commit()
+#    db.refresh(db_patient)
+#    return db_patient
+
+#@app.get("/patients/{patient_id}", response_model=PatientOut)
+#async def get_patient(patient_id: int, db: SessionLocal = Depends(get_db)):
+#    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+#    if not patient:
+#        raise HTTPException(status_code=404, detail="Patient not found")
+#    return patient
+
+#@app.put("/patients/{patient_id}", response_model=PatientOut)
+#async def update_patient(patient_id: int, patient: PatientCreate, db: SessionLocal = Depends(get_db)):
+#    db_patient = db.query(Patient).filter(Patient.id == patient_id).first()
+#    if not db_patient:
+#        raise HTTPException(status_code=404, detail="Patient not found")
+#    for key, value in patient.dict().items():
+#        setattr(db_patient, key, value)
+#    db.commit()
+#    db.refresh(db_patient)
+#    return db_patient
+
+#@app.delete("/patients/{patient_id}")
+#async def delete_patient(patient_id: int, db: SessionLocal = Depends(get_db)):
+#    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+#    if not patient:
+#        raise HTTPException(status_code=404, detail="Patient not found")
+#    db.delete(patient)
+#    db.commit()
+#    return {"message": "Patient deleted"}
+

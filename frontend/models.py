@@ -13,18 +13,8 @@ class Diagnostic(db.Model):
     review_status = db.Column(db.Boolean,nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    patient = relationship("Patient")
+#    patient = relationship("Patient")
     user = relationship("User")
-
-class Patient(db.Model):
-    __tablename__ = "patients"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    dob = db.Column(db.Date, nullable=False)  # Date of Birth
-    gender = db.Column(db.String(10), nullable=False)
-    phone = db.Column(db.String(20), nullable=True)
-    address = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 from flask_login import UserMixin
 

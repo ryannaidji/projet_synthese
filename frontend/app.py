@@ -1,19 +1,33 @@
 import os
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, redirect, url_for, flash, abort, request, session
+from flask import Flask, render_template, redirect, url_for, flash, abort, request, session, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from decorators import role_required
-from models import db, Patient, User, Diagnostic
-from datetime import datetime
+from models import db, User, Diagnostic
+from datetime import datetime, date
 
 from flask import jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from flask import jsonify
+from flask import Response
+import json
+
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from pydantic import BaseModel
+import prometheus_client
+
+from  middleware import setup_metrics
+
+CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
 
 app = Flask(__name__)
+setup_metrics(app)
+
+@app.route('/metrics')
+def metrics():
+    return Response(prometheus_client.generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -33,6 +47,8 @@ login_manager.init_app(app)
 login_manager.login_view = "login"  # Redirect users to 'login' if not logged in
 
 jwt = JWTManager(app)
+
+BACKEND_URL="http://localhost:9000/"  
 
 @app.route('/create-admin')
 def create_admin():
@@ -54,7 +70,7 @@ def create_admin():
 #with app.app_context():
 #    db.drop_all()
 
-# Recreate the tables
+#Recreate the tables
 #with app.app_context():
 #    db.create_all()
 
@@ -75,11 +91,6 @@ def allowed_file(filename):
 @app.route('/')
 def landing():
     return render_template('landing.html')
-
-from flask import render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_user, logout_user, current_user
-#from flask_jwt_extended import create_access_token
-from werkzeug.security import check_password_hash
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -161,14 +172,10 @@ def create_diagnostic():
         return redirect(url_for('show_diagnostic', diagnostic_id=new_diagnostic.id))
 
     # Fetch all patients for the form dropdown
-    patients = Patient.query.all()
+    #patients = Patient.query.all()
     doctors = User.query.filter_by(role="doctor").all()
     return render_template('upload.html', patients=patients, doctors=doctors)
 
-
-from flask import request, render_template, redirect, url_for, flash
-from models import User, db
-from werkzeug.security import generate_password_hash
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -231,29 +238,25 @@ def edit_diagnostic(diagnostic_id):
         return redirect(url_for('diagnostics'))
 
     return redirect(url_for('show_diagnostic', diagnostic_id=diagnostic.id))
-
-
+################################################################################################
 @app.route('/admin/patients')
 @login_required
 @role_required("admin","doctor","nurse")
 def admin_patients():
-    patients = Patient.query.all()
-    return render_template('admin_patients.html', patients=patients)
+    response = requests.get(BACKEND_URL+"/api/patients")
+    return render_template('admin_patients.html', patients=json.loads(response.text))
 
 @app.route("/admin/patients/add", methods=["GET", "POST"])
 @login_required
 def add_patient():
     if request.method == "POST":
-        name = request.form["name"]
-        dob = datetime.strptime(request.form["dob"], '%Y-%m-%d').date()
-        gender = request.form["gender"]
-        address = request.form.get("address")
-        phone = request.form.get("phone")
-
-        new_patient = Patient(name=name, dob=dob, gender=gender, address=address, phone=phone)
-        db.session.add(new_patient)
-        db.session.commit()
-        flash("Patient added successfully!")
+        data = {}
+        data['name'] = request.form["name"]
+        data['dob'] = request.form["dob"]
+        data['gender'] = request.form["gender"]
+        data['address'] = request.form.get("address")
+        data['phone'] = request.form.get("phone")
+        response = requests.post(BACKEND_URL+"/api/patients",data=json.dumps(data))
         return redirect(url_for("admin_patients"))
 
     return render_template("add_patient.html")
@@ -261,29 +264,30 @@ def add_patient():
 @app.route("/patients/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_patient(id):
-    patient = Patient.query.get_or_404(id)
-
+    patient = requests.get(BACKEND_URL+"/api/patients/"+str(id))
+    
     if request.method == "POST":
-        patient.name = request.form["name"]
-        patient.dob = datetime.strptime(request.form["dob"], '%Y-%m-%d').date()
-        patient.gender = request.form["gender"]
-        patient.address = request.form.get("address")
-        patient.phone = request.form.get("phone")
-
-        db.session.commit()
-        flash("Patient updated successfully!")
+        data = {}
+        data['name'] = request.form["name"]
+        data['dob'] = request.form["dob"]
+        data['gender'] = request.form["gender"]
+        data['address'] = request.form.get("address")
+        data['phone'] = request.form.get("phone")
+        response = requests.put(BACKEND_URL+"/api/patients/"+str(id),data=json.dumps(data))
         return redirect(url_for("admin_patients"))
 
-    return render_template("add_patient.html", patient=patient, is_edit=True)
+    return render_template("add_patient.html", patient=patient.json(), is_edit=True)
 
 @app.route("/patients/delete/<int:id>", methods=["POST"])
 @login_required
 def delete_patient(id):
-    patient = Patient.query.get_or_404(id)
-    db.session.delete(patient)
-    db.session.commit()
-    flash("Patient deleted successfully!")
+    response = requests.delete(BACKEND_URL+"/api/patients/"+str(id))
     return redirect(url_for("admin_patients"))
+
+##################################################################################################
+
+
+
 
 @app.route("/admin/diagnostics/delete/<int:id>", methods=["POST"])
 @login_required
@@ -294,6 +298,9 @@ def delete_diagnostic(id):
     db.session.commit()
     flash("Diagnostic deleted successfully!")
     return redirect(url_for("diagnostics"))
+
+
+##################################################################################################
 
 @app.route('/admin/users')
 @login_required
@@ -337,6 +344,10 @@ def delete_user(user_id):
     db.session.commit()
     flash("User deleted successfully.", "success")
     return redirect(url_for('admin_users'))
+
+@app.get("/health")
+def root():
+    return {"message": "The frontend is LIVE!!"}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000,debug=True)
