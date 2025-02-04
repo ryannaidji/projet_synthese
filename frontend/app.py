@@ -26,7 +26,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///patients.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = "your_flask_secret"
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -516,7 +515,6 @@ def delete_diagnostic(id):
        flash(response_json["message"],"flash-message success")
 
     return redirect(url_for('diagnostics'))
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000,debug=True)
