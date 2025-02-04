@@ -24,8 +24,7 @@ def metrics():
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///patients.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "your_flask_secret"
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
