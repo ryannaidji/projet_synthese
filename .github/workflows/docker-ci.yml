@@ -1,0 +1,30 @@
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - feature/pipeline2
+  pull_request:
+
+jobs:
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Run Tests
+        run: pytest backend/tests
+
