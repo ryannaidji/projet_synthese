@@ -6,9 +6,10 @@
 <div class="card p-4  col-md-6" style="max-width: 800px; margin: 0 auto;">
     <h2 class="text-center mb-4">Diagnostic  Result</h2>
 
-    <!-- Patient Name -->
-    <p><strong>Patient Name:</strong> {{ diagnostic.patient.name }}</p>
-    <p><strong>Doctor Name:</strong> {{ diagnostic.user.fullname }}</p>
+    {% set patient = patients | selectattr("id", "equalto", diagnostic.patient_id) | first %}
+    <p><strong>Patient Name:</strong> {{ patient.name }}</p>
+    {% set doctor = doctors | selectattr("id", "equalto", diagnostic.doctor_id) | first %}
+    <p><strong>Doctor Name:</strong> {{ doctor.fullname }}</p>
 
     <!-- Uploaded Image -->
     <div class="text-center mb-4">
@@ -20,7 +21,7 @@
         <h4>Prediction: {{ diagnostic.prediction }}</h4>
     </div>
 
-    {% if current_user.role in ['doctor', 'admin'] %}
+    {% if session["role"] in ['doctor', 'admin'] %}
     <div class="mt-4">
         <h4>Provide Your Opinion</h4>
 	<form action="/admin/diagnostic/edit/{{ diagnostic.id }}" method="POST">

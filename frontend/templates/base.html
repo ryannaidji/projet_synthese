@@ -43,6 +43,15 @@
             background-color: rgba(255, 255, 255, 0.1);
             border: none;
         }
+        .flash-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background-color: #4CAF50; color: white; }
+        .error { background-color: #f44336; color: white; }
+        .warning { background-color: #ff9800; color: white; }
+        .info { background-color: #2196F3; color: white; }
     </style>
 </head>
 <body>
@@ -51,9 +60,9 @@
             <a class="navbar-brand" href="/">Brain Tumor Detection</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-auto">
-	            {% if current_user.is_authenticated %}
-		    <li class="nav-item nav-link">Hello, {{ current_user.username }}</li>
-		    {% if current_user.role == 'admin' %}
+	            {% if session["username"] %}
+		    <li class="nav-item nav-link">Hello, {{ session["username"] }}</li>
+		    {% if session["role"] in ['admin'] %}
                     <li class="nav-item"><a class="nav-link" href="/admin/users">Users</a></li>
 		    {% endif %}
 		    <li class="nav-item"><a class="nav-link" href="/admin/patients">Patients</a></li>
@@ -68,10 +77,18 @@
             </div>
         </nav>
     </header>
-
     <main class="container">
+	        <div class="flash-messages">
+       {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    </div>
+
         {% block content %}
-        <!-- Page-specific content goes here -->
         {% endblock %}
     </main>
 
