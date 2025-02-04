@@ -28,3 +28,39 @@ jobs:
       - name: Run Tests
         run: cd backend && pytest -v
 
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    needs: test-backend 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set Image Tags
+        run: |
+          echo "BACKEND_IMAGE=my-docker-user/backend:latest" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=my-docker-user/frontend:latest" >> $GITHUB_ENV
+
+      - name: Build Backend Image
+        run: |
+          docker build -t ${{ env.BACKEND_IMAGE }} ./backend
+
+      - name: Build Frontend Image
+        run: |
+          docker build -t ${{ env.FRONTEND_IMAGE }} ./frontend
+
+          #      - name: Push Backend Image
+          #run: |
+          #docker push ${{ env.BACKEND_IMAGE }}
+
+          #- name: Push Frontend Image
+          #run: |
+          #docker push ${{ env.FRONTEND_IMAGE }}
+
