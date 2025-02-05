@@ -58,9 +58,9 @@ jobs:
 
           #      - name: Push Backend Image
           #run: |
-          #docker push ${{ env.BACKEND_IMAGE }}
+          docker push ${{ env.BACKEND_IMAGE }}
 
           #- name: Push Frontend Image
           #run: |
-          #docker push ${{ env.FRONTEND_IMAGE }}
+          docker push ${{ env.FRONTEND_IMAGE }}
 
