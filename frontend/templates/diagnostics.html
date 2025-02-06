@@ -32,7 +32,8 @@
             {% for diagnostic in diagnostics %}
             <tr>
                 <td>{{ diagnostic.created_at }}</td>
-                <td>{{ diagnostic.patient.name }}</td>
+		{% set patient = patients | selectattr("id", "equalto", diagnostic.patient_id) | first %}
+                <td>{{ patient.name }}</td>
                 <td><a href="{{ url_for('show_diagnostic', diagnostic_id=diagnostic.id) }}" class="btn btn-info btn-sm">View Result</a></td>
                 <td>{{ diagnostic.prediction }}%</td>
                 <td>{{ diagnostic.reviewed_comment }}</td>
@@ -43,7 +44,8 @@
                         <span class="badge badge-warning">Not Reviewed</span>
                     {% endif %}
                 </td>
-                <td>{{ diagnostic.user.fullname }}</td>
+		{% set doctor = doctors | selectattr("id", "equalto", diagnostic.doctor_id) | first %}
+                <td>{{ doctor.fullname }}</td>
                 <td>
                 <form action="{{ url_for('delete_diagnostic', id=diagnostic.id) }}" method="POST" style="display:inline;">
                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this diagnostic?');"><i class="fas fa-trash-alt"></i></button>
