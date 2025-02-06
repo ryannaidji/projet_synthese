@@ -7,6 +7,7 @@ from app.models import Patient
 from typing import List, Annotated
 from app.role_checker import RoleChecker
 from app.schemas import PatientResponse, PatientCreate
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter(prefix="/api/patients", tags=["Patients"])
 
@@ -63,7 +64,15 @@ async def delete_patient(
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
-    db.delete(patient)
-    db.commit()
-    return {"message": "Patient deleted"}
+    try:
+        db.delete(patient)
+        db.commit()
+        return {"message": "Patient deleted successfully"}
+    
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400, 
+            detail="Cannot delete patient because there are associated diagnostics."
+        )
 

@@ -9,6 +9,7 @@ from typing import Annotated
 from app.role_checker import RoleChecker
 from app.auth import get_current_active_user, get_password_hash
 from app.schemas import UserResponse, UserCreate
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
@@ -77,7 +78,15 @@ async def delete_user(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    db.delete(user)
-    db.commit()
-    return {"message": "User deleted"}
+    try:
+        db.delete(user)
+        db.commit()
+        return {"message": "Patient deleted successfully"}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete user  because there are associated diagnostics."
+        )
+
 

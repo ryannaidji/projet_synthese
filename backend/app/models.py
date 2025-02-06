@@ -27,12 +27,12 @@ class User(Base):
 class Diagnostic(Base):
     __tablename__ = "diagnostics"
     id = Column(Integer, primary_key=True)
-    patient_id = Column(Integer, ForeignKey('patients.id'), nullable=False)
-    analysis_link = Column(String(255), nullable=False)  # Date of Birth
+    patient_id = Column(Integer, ForeignKey('patients.id', ondelete="RESTRICT"),nullable=False)
+    analysis_link = Column(String(255), nullable=False)
     prediction = Column(String(255), nullable=False)
     reviewed_comment = Column(String(255), nullable=True)
     review_status = Column(Boolean,nullable=False)
-    doctor_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    doctor_id = Column(Integer, ForeignKey('users.id', ondelete="RESTRICT"),nullable=True)
     created_at = Column(DateTime, default=datetime.now())
     patient = relationship("Patient")
     user = relationship("User")

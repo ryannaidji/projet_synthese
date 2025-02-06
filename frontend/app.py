@@ -111,7 +111,7 @@ def register():
                flash("User added successfully", "flash-message succcess")
                return redirect(url_for("admin_users"))
         else:
-            flash(response.json()["detail"], "error")
+            flash(response.json(), "error")
 
     return render_template('register.html',action_url=url_for('register'), button_text="Register", title_text="User Registration",form_action="new")
 
@@ -178,6 +178,10 @@ def delete_user(user_id):
     if response.status_code == 200:
        response_json = response.json()
        flash(response_json["message"],"flash-message success")
+       return redirect(url_for('admin_users'))
+    else:
+       response_json = response.json()
+       flash(response_json["detail"],"flash-message error")
        return redirect(url_for('admin_users'))
 
 @app.route('/admin/users/edit/<int:user_id>', methods=['GET', 'POST'])
@@ -297,6 +301,11 @@ def delete_patient(id):
        response_json = response.json()
        flash(response_json["message"],"flash-message success")
        return redirect(url_for('admin_patients'))
+    else:
+       response_json = response.json()
+       flash(response_json["detail"],"flash-message error")
+       return redirect(url_for('admin_patients'))
+
 
 @app.route("/patients/edit/<int:id>", methods=["GET", "POST"])
 def edit_patient(id):
