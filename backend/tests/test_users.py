@@ -9,7 +9,7 @@ def test_create_delete_user(test_client, user_payload, auth_headers):
     response = test_client.delete(f"/api/users/2", headers=auth_headers)
     response_json = response.json()
     assert response.status_code == 200
-    assert response_json["message"] == "User deleted"
+    assert response_json["message"] == "User deleted successfully"
 
 def test_create_get_user(test_client, user_payload, auth_headers):
     response = test_client.post("/api/users/", json=user_payload, headers=auth_headers)

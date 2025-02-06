@@ -81,7 +81,7 @@ async def delete_user(
     try:
         db.delete(user)
         db.commit()
-        return {"message": "Patient deleted successfully"}
+        return {"message": "User deleted successfully"}
     except IntegrityError:
         db.rollback()
         raise HTTPException(

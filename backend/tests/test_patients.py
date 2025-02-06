@@ -9,7 +9,7 @@ def test_create_delete_patient(test_client, patient_payload, auth_headers):
     response = test_client.delete(f"/api/patients/1", headers=auth_headers)
     response_json = response.json()
     assert response.status_code == 200
-    assert response_json["message"] == "Patient deleted"
+    assert response_json["message"] == "Patient deleted successfully"
 
 def test_create_get_patient(test_client, patient_payload, auth_headers):
     response = test_client.post("/api/patients/", json=patient_payload, headers=auth_headers)
