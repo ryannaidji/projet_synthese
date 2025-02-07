@@ -40,10 +40,19 @@ jobs:
           dvc remote modify gdrive_remote --local gdrive_service_account_json_file_path ~/.config/dvc/gdrive-credentials.json
           echo "DVC Remote configuré"
 
-      - name: Télécharger les données depuis DVC
+      - name: Télécharger seulement 100 fichiers par classe (Optimisé)
         run: |
-          dvc pull
-          echo "Données récupérées depuis le stockage distant"
+          echo "Téléchargement limité à 100 fichiers par classe"
+          for folder in glioma meningioma notumor pituitary; do
+            files=$(dvc list . dvc_storage/data/raw/$folder --dvc-only | head -100 | awk '{print "dvc_storage/data/raw/" $0}')
+            if [ -n "$files" ]; then
+              echo " Téléchargement de 100 fichiers depuis $folder..."
+              dvc pull --verbose --jobs 8 $files
+            else
+              echo "Aucun fichier trouvé dans $folder"
+            fi
+          done
+          echo "Téléchargement partiel terminé"
 
       - name: Exécuter le pipeline DVC
         run: |
