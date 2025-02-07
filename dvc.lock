@@ -1,0 +1,38 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+    - path: dvc_storage/data/raw/
+      hash: md5
+      md5: 550eee2e36357d1ebd8bcf0df49cc785.dir
+      size: 161507006
+      nfiles: 7153
+    - path: scripts/preprocess.py
+      hash: md5
+      md5: e389807d295e35b7c12da8cb545e3cd9
+      size: 3556
+    outs:
+    - path: dvc_storage/data/processed/
+      hash: md5
+      md5: f32b46a904bb6fe60e080ed013ff5cae.dir
+      size: 937587324
+      nfiles: 5
+  train:
+    cmd: python scripts/train.py --data dvc_storage/data/processed --output dvc_storage/models
+    deps:
+    - path: dvc_storage/data/processed/
+      hash: md5
+      md5: f32b46a904bb6fe60e080ed013ff5cae.dir
+      size: 937587324
+      nfiles: 5
+    - path: scripts/train.py
+      hash: md5
+      md5: aabd34ec87fbf330352e7d47357beef3
+      size: 3926
+    outs:
+    - path: dvc_storage/models/
+      hash: md5
+      md5: 007c254fb64ea46f9876187591589649.dir
+      size: 101838384
+      nfiles: 1

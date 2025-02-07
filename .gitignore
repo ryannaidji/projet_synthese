@@ -1,6 +1,4 @@
 # Data
-dvc_storage/data/external
-dvc_storage/data/interim
 dvc_storage/data/processed
 dvc_storage/data/raw
 dvc_storage/models/
@@ -12,6 +10,8 @@ frontend/static/upload
 # Mac OS-specific storage files
 .DS_Store
 
+# MLflow
+mlruns/
 
 
 # vim

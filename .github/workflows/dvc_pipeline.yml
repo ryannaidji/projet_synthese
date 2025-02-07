@@ -1,0 +1,68 @@
+name: DVC Pipeline (Preprocess + Train)
+
+on:
+  push:
+    branches:
+      - feature/dvc_storage
+  pull_request:
+    branches:
+      - feature/dvc_storage
+
+jobs:
+  dvc_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Installer les dépendances
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install dvc[gdrive] mlflow tensorflow opencv-python scikit-learn
+
+      - name: Ajouter les identifiants Google Drive
+        env:
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
+        run: |
+          if [ -z "$GDRIVE_CREDENTIALS" ]; then
+            echo "ERREUR : La clé secrète GDRIVE_CREDENTIALS est vide !"
+            exit 1
+          fi
+          mkdir -p ~/.config/dvc/
+          echo "$GDRIVE_CREDENTIALS" > ~/.config/dvc/gdrive-credentials.json
+          echo "Fichier de clé secrète ajouté"
+
+      - name: Configurer DVC Remote
+        run: |
+          dvc remote modify gdrive_remote gdrive_use_service_account true
+          dvc remote modify gdrive_remote --local credentialpath ~/.config/dvc/gdrive-credentials.json
+          echo "DVC Remote configuré"
+
+      - name: Télécharger les données depuis DVC
+        run: |
+          dvc pull
+          echo "Données récupérées depuis le stockage distant"
+
+      - name: Exécuter le pipeline DVC
+        run: |
+          dvc repro
+          echo "Pipeline DVC exécuté avec succès"
+
+      - name: Pousser les fichiers mis à jour vers le stockage DVC
+        run: |
+          if [[ $(dvc status) == *"to be pushed"* ]]; then
+            dvc push
+            echo "Données et modèle envoyés vers le stockage distant"
+          else
+            echo "Aucun changement détecté, dvc push ignoré"
+          fi
+
+      - name: Valider les changements dans Git (si DVC a mis à jour des fichiers)
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git diff --cached --quiet || git commit -m "🔄 Mise à jour des fichiers DVC après exécution du pipeline"
+          git push origin feature/dvc_storage || echo "ℹ️ Pas de changement à pousser"

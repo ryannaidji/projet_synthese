@@ -1,0 +1,16 @@
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+      - scripts/preprocess.py
+      - dvc_storage/data/raw/
+    outs:
+      - dvc_storage/data/processed/
+
+  train:
+    cmd: python scripts/train.py --data dvc_storage/data/processed --output dvc_storage/models
+    deps:
+      - scripts/train.py
+      - dvc_storage/data/processed/
+    outs:
+      - dvc_storage/models/
