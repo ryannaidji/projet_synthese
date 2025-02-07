@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feature/dvc_storage
+  pull_request:
+    branches:
+      - feature/dvc_storage
 
 jobs:
   dvc_pipeline:
@@ -34,7 +37,7 @@ jobs:
       - name: Configurer DVC Remote
         run: |
           dvc remote modify gdrive_remote gdrive_use_service_account true
-          dvc remote modify gdrive_remote --local credentialpath ~/.config/dvc/gdrive-credentials.json
+          dvc remote modify gdrive_remote --local gdrive_service_account_json_file_path ~/.config/dvc/gdrive-credentials.json
           echo "DVC Remote configuré"
 
       - name: Télécharger les données depuis DVC
@@ -61,5 +64,5 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git add .
-          git diff --cached --quiet || git commit -m " Mise à jour des fichiers DVC après exécution du pipeline"
+          git diff --cached --quiet || git commit -m "Mise à jour des fichiers DVC après exécution du pipeline"
           git push origin feature/dvc_storage || echo "Pas de changement à pousser"
