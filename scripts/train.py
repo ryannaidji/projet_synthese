@@ -17,7 +17,7 @@ mlflow.set_tracking_uri("file:mlflow/mlruns")
 INPUT_SHAPE = (128, 128, 1)  # 1 canal pour grayscale
 NUM_CLASSES = 4  # Nombre de classes dans le dataset
 LEARNING_RATE = 0.001
-EPOCHS = 1
+EPOCHS = 10
 BATCH_SIZE = 32
 
 # Charger les données
