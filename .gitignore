@@ -12,6 +12,8 @@ frontend/static/upload
 
 # MLflow
 mlruns/
+mlflow/mlruns/
+mlflow/models/
 
 
 # vim
