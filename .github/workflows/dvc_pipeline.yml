@@ -44,10 +44,10 @@ jobs:
         run: |
           echo "Téléchargement limité à 100 fichiers par classe"
           for folder in glioma meningioma notumor pituitary; do
-            files=$(dvc list . dvc_storage/data/raw/$folder --dvc-only | head -100 | awk '{print "dvc_storage/data/raw/" $0}')
+            files=$(dvc list . dvc_storage/data/raw/$folder --dvc-only | head -100 | awk -v prefix="dvc_storage/data/raw/$folder/" '{print prefix $0}')
             if [ -n "$files" ]; then
               echo " Téléchargement de 100 fichiers depuis $folder..."
-              dvc pull --verbose --jobs 8 --force $files
+              echo "$files" | xargs dvc pull --verbose --jobs 8 --force
             else
               echo "Aucun fichier trouvé dans $folder"
             fi
@@ -57,7 +57,7 @@ jobs:
       - name: Vérification des fichiers téléchargés
         run: |
           echo "Contenu du dossier après téléchargement:"
-          ls -l dvc_storage/data/raw/
+          find dvc_storage/data/raw/ -type f | head -20
 
       - name: Exécuter le pipeline DVC
         run: |
