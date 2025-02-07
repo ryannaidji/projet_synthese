@@ -1,0 +1,6 @@
+[core]
+    remote = gdrive_remote
+['remote "gdrive_remote"']
+    url = gdrive://1rhCz8rVjgb2rZ_uRkIj5jNs3xE9ictuw
+    gdrive_use_service_account = true
+    gdrive_service_account_json_file_path = ../dvc_storage/service_account.json

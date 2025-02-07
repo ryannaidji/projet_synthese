@@ -4,6 +4,7 @@ dvc_storage/data/interim
 dvc_storage/data/processed
 dvc_storage/data/raw
 dvc_storage/models/
+dvc_storage/service_account.json
 
 frontend/upload
 frontend/static/upload
@@ -11,8 +12,7 @@ frontend/static/upload
 # Mac OS-specific storage files
 .DS_Store
 
-# Credentials
-.gdrive/
+
 
 # vim
 *.swp
