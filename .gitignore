@@ -1,7 +1,9 @@
 # Data
-/data/
-!data/*.dvc
-!data/**/.gitignore
+dvc_storage/data/external
+dvc_storage/data/interim
+dvc_storage/data/processed
+dvc_storage/data/raw
+dvc_storage/models/
 
 frontend/upload
 frontend/static/upload
