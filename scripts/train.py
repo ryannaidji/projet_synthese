@@ -9,8 +9,9 @@ import argparse
 
 # Définition des chemins des données et du modèle
 PROCESSED_DATA_DIR = "dvc_storage/data/processed/"
-MODEL_OUTPUT_DIR = "dvc_storage/models/"
+MODEL_OUTPUT_DIR = "mlflow/models/"
 MLFLOW_EXPERIMENT_NAME = "BrainTumor_Classification"
+mlflow.set_tracking_uri("file:mlflow/mlruns")
 
 # Hyperparamètres définis directement dans le script
 INPUT_SHAPE = (128, 128, 1)  # 1 canal pour grayscale
@@ -61,7 +62,7 @@ def train_model(data_dir, output_dir):
     print("Chargement des données...")
     X_train, y_train, X_test, y_test = load_data(data_dir)
 
-    # ✅ Correction : conversion des labels en one-hot encoding
+    # Correction : conversion des labels en one-hot encoding
     y_train = tf.keras.utils.to_categorical(y_train, num_classes=NUM_CLASSES)
     y_test = tf.keras.utils.to_categorical(y_test, num_classes=NUM_CLASSES)
 

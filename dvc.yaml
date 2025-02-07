@@ -8,9 +8,9 @@ stages:
       - dvc_storage/data/processed/
 
   train:
-    cmd: python scripts/train.py --data dvc_storage/data/processed --output dvc_storage/models
+    cmd: python scripts/train.py --data dvc_storage/data/processed --output mlflow/models
     deps:
       - scripts/train.py
       - dvc_storage/data/processed/
     outs:
-      - dvc_storage/models/
+      - mlflow/models/

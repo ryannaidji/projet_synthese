@@ -2,9 +2,8 @@ FROM python:3.9
 
 WORKDIR /mlflow
 
-RUN pip install mlflow sqlite3
+RUN pip install mlflow
 
-# Exposer le port MLflow
 EXPOSE 5000
 
 CMD mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 0.0.0.0 --port 5000

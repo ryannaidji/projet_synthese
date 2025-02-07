@@ -19,7 +19,7 @@ stages:
       size: 937587324
       nfiles: 5
   train:
-    cmd: python scripts/train.py --data dvc_storage/data/processed --output dvc_storage/models
+    cmd: python scripts/train.py --data dvc_storage/data/processed --output mlflow/models
     deps:
     - path: dvc_storage/data/processed/
       hash: md5
@@ -28,11 +28,11 @@ stages:
       nfiles: 5
     - path: scripts/train.py
       hash: md5
-      md5: 2ed68109544d4dc6541b7f6ab3ef164c
-      size: 3877
+      md5: a054172c99aa0d97529755594fac8dd7
+      size: 3915
     outs:
-    - path: dvc_storage/models/
+    - path: mlflow/models/
       hash: md5
-      md5: bbb213a6f8d90fb6e7fe1bc5902a4375.dir
+      md5: d3c57c90f18e4144c7e1e52768e6fa2f.dir
       size: 101838384
       nfiles: 1
