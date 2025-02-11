@@ -12,7 +12,7 @@ services:
     name: frontend
     runtime: image
     image:
-      url: docker.io/ryannaidji/backend:latest
+      url: docker.io/ryannaidji/frontend:latest
     region: oregon
     plan: free
     healthCheckPath: /
