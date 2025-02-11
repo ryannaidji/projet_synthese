@@ -15,7 +15,7 @@ services:
       url: docker.io/ryannaidji/backend:latest
     region: oregon
     plan: free
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     envVars:
       - key: BACKEND_HOST
         fromService:
