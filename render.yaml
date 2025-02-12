@@ -1,12 +1,12 @@
 services:
-  - type: web
-    name: backend
-    runtime: image
-    image:
-      url: docker.io/ryannaidji/backend:latest
-    region: oregon
-    plan: free
-    healthCheckPath: /
+  #  - type: web
+  #  name: backend
+  #  runtime: image
+  #  image:
+  #    url: docker.io/ryannaidji/backend:latest
+  #  region: oregon
+  #  plan: free
+  #  healthCheckPath: /
 
   - type: web
     name: frontend
@@ -15,11 +15,11 @@ services:
       url: docker.io/ryannaidji/frontend:latest
     region: oregon
     plan: free
-    healthCheckPath: /
-    envVars:
-      - key: BACKEND_HOST
-        fromService:
-          type: web
-          name: backend
-          property: host
+    healthCheckPath: /health
+      #  envVars:
+      #- key: BACKEND_HOST
+      #  fromService:
+      #    type: web
+      #    name: backend
+      #    property: host
 
