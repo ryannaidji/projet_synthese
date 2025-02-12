@@ -31,7 +31,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #BACKEND_URL="http://localhost:9000/"  
 
-BACKEND_URL="http://"+environ.get('BACKEND_HOST')+":9000"
+BACKEND_URL="http://"+environ.get('BACKEND_HOST')+".onrender.com:9000"
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
