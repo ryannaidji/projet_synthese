@@ -31,7 +31,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #BACKEND_URL="http://localhost:9000/"  
 
-BACKEND_URL="http://"+environ.get('BACKEND_HOST')+".onrender.com:9000"
+BACKEND_URL="https://"+environ.get('BACKEND_HOST')+".onrender.com:9000"
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -105,7 +105,7 @@ def register():
             flash("Passwords do not match", "flash-message error")
             return render_template('register.html', action_url=url_for('register'),button_text="Register", title_text="User Registration", form_action=request.form['form_action'])
 
-        response = requests.post(f"{BACKEND_URL}/api/users/register", json={"username": username, "fullname": fullname, "email": email, "role": role, "disabled": disabled, "password": password})
+        response = requests.post(f"{BACKEND_URL}/api/users/register", json={"username": username, "fullname": fullname, "email": email, "role": role, "disabled": disabled, "password": password}, verify=False)
         if response.status_code == 200:
             if request.form.get('form_action') == "new":
                flash("Registration successful! Please log in.", "flash-message success")
