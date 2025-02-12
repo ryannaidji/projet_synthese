@@ -1,12 +1,12 @@
 services:
-  #  - type: web
-  #  name: backend
-  #  runtime: image
-  #  image:
-  #    url: docker.io/ryannaidji/backend:latest
-  #  region: oregon
-  #  plan: free
-  #  healthCheckPath: /
+  - type: web
+    name: backend
+    runtime: image
+    image:
+      url: docker.io/ryannaidji/backend:latest
+    region: oregon
+    plan: free
+    healthCheckPath: /api/health
 
   - type: web
     name: frontend
