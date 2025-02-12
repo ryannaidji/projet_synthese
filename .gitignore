@@ -1,9 +1,4 @@
-# Data
-dvc_storage/data/processed
-dvc_storage/data/raw
-dvc_storage/models/
-dvc_storage/service_account.json
-
+# Frontend
 frontend/upload
 frontend/static/upload
 
