@@ -16,10 +16,10 @@ services:
     region: oregon
     plan: free
     healthCheckPath: /health
-      #  envVars:
-      #- key: BACKEND_HOST
-      #  fromService:
-      #    type: web
-      #    name: backend
-      #    property: host
+    envVars:
+      - key: BACKEND_HOST
+        fromService:
+          type: web
+          name: backend
+          property: host
 
