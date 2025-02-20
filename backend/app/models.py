@@ -1,5 +1,5 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String, Date, create_engine, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Date, create_engine, DateTime, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
 from datetime import date, datetime
 
@@ -30,6 +30,7 @@ class Diagnostic(Base):
     patient_id = Column(Integer, ForeignKey('patients.id', ondelete="RESTRICT"),nullable=False)
     analysis_link = Column(String(255), nullable=False)
     prediction = Column(String(255), nullable=False)
+    confidence = Column(Float, nullable=True)
     reviewed_comment = Column(String(255), nullable=True)
     review_status = Column(Boolean,nullable=False)
     doctor_id = Column(Integer, ForeignKey('users.id', ondelete="RESTRICT"),nullable=True)

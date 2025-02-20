@@ -1,0 +1,7 @@
+mlflow
+pandas
+numpy
+tensorflow
+opencv-python
+requests
+gunicorn

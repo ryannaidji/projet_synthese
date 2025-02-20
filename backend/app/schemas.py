@@ -50,6 +50,7 @@ class DiagnosticResponse(BaseModel):
     patient_id: int
     analysis_link: str
     prediction: str
+    confidence: float
     reviewed_comment: str
     review_status: bool
     doctor_id: int
@@ -59,6 +60,7 @@ class DiagnosticCreate(BaseModel):
     patient_id: int
     analysis_link: str
     prediction: str
+    confidence: float
     reviewed_comment: str
     review_status: bool
     doctor_id: int

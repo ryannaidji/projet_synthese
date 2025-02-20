@@ -28,7 +28,11 @@ app.secret_key = "your_flask_secret"
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-BACKEND_URL="http://localhost:9000/"  
+
+#########
+BACKEND_URL="http://backend:9000"
+#BACKEND_URL="http://localhost:9000/"  
+#########
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -410,6 +414,20 @@ def create_diagnostic():
         else:
             return render_template('upload.html', error="Invalid file type")
 
+        ############ PRED ############
+        with open(filepath, "rb") as img_file:
+            files = {"file": img_file}
+            prediction_response = requests.post(f"{BACKEND_URL}/api/predict/", files=files)
+        
+        if prediction_response.status_code == 200:
+            prediction_json = prediction_response.json()
+            result_prediction = prediction_json.get("prediction", "Unknow")
+            confidence_score = prediction_json.get("confidence", "N/A")
+        else:
+            result_prediction = "Prediction failed"
+            confidence_score = "N/A"
+
+
         now = datetime.now()
         patient_id = request.form['patient']
         analysis_link = filepath
@@ -417,17 +435,16 @@ def create_diagnostic():
         status = False
         doctor_id = request.form['doctor']
 
-        result_prediction = "TBD"
-
         data = {}
         data['patient_id'] = patient_id
         data['analysis_link'] = filepath
         data['prediction'] = result_prediction
+        data['confidence'] = confidence_score
         data['reviewed_comment'] = comment
         data['review_status'] = status
         data['doctor_id'] = doctor_id
 
-        response = requests.post(BACKEND_URL+"/api/diagnostics",data=json.dumps(data), headers=headers)
+        response = requests.post(BACKEND_URL+"/api/diagnostics",json=data, headers=headers)
         if response.status_code == 401:
            flash("Permission denied", "flash-message error")
         if response.status_code == 200:
@@ -458,6 +475,7 @@ def diagnostics():
     patients = requests.get(f"{BACKEND_URL}/api/patients", headers=headers)
 
     response = requests.get(f"{BACKEND_URL}/api/diagnostics", headers=headers)
+
     if response.status_code == 401:
         flash("Permission denied", "flash-message error")
         return redirect(url_for("login"))

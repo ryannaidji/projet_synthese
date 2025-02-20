@@ -22,6 +22,7 @@
                 <th>Patient</th>
                 <th>Analysis</th>
                 <th>Prediction</th>
+                <th>Confidence</th>
                 <th>Comment</th>
                 <th>Status</th>
                 <th>Doctor</th>
@@ -35,7 +36,8 @@
 		{% set patient = patients | selectattr("id", "equalto", diagnostic.patient_id) | first %}
                 <td>{{ patient.name }}</td>
                 <td><a href="{{ url_for('show_diagnostic', diagnostic_id=diagnostic.id) }}" class="btn btn-info btn-sm">View Result</a></td>
-                <td>{{ diagnostic.prediction }}%</td>
+                <td>Classe: {{ diagnostic.prediction }}</td>
+                <td>Confidence: {{ "%.2f"|format(diagnostic.confidence * 100) if diagnostic.confidence else 'N/A'}}%</td>
                 <td>{{ diagnostic.reviewed_comment }}</td>
                 <td>
                     {% if diagnostic.review_status  %}

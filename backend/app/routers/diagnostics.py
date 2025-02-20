@@ -51,6 +51,7 @@ async def update_diagnostic(
     diagnostic.reviewed_comment = diagnostic_new.reviewed_comment
     diagnostic.doctor_id = diagnostic_new.doctor_id
     diagnostic.prediction = diagnostic_new.prediction
+    diagnostic.confidence = diagnostic_new.confidence
     diagnostic.review_status = diagnostic_new.review_status
     db.commit()
     db.refresh(diagnostic)

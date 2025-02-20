@@ -1,0 +1,29 @@
+services:
+  mlflow:
+    build: ./mlflow
+    ports:
+      - "5001:5001"
+    networks:
+      - my_network
+
+  backend:
+    build: ./backend
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mlflow
+    networks:
+      - my_network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - backend
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

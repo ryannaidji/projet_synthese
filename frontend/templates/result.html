@@ -18,7 +18,10 @@
 
     <!-- Prediction Result -->
     <div class="alert alert-info text-center">
-        <h4>Prediction: {{ diagnostic.prediction }}</h4>
+        <h4>
+            Prediction: {{ diagnostic.prediction if diagnostic.prediction else 'N/A' }}<br>
+            Confidence: {{ "%.2f"|format(diagnostic.confidence * 100) if diagnostic.confidence else 'N/A' }}%
+        </h4>
     </div>
 
     {% if session["role"] in ['doctor', 'admin'] %}

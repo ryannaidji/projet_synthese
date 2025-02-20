@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
-from app.main import app 
+from backend.app.main import app 
 from app.database import Base, get_db
 
 SQLITE_DATABASE_URL = "sqlite:///./test_db.db"
@@ -116,7 +116,8 @@ def diagnostic_payload():
     return {
         "patient_id": 1,
         "analysis_link": "some link",
-        "prediction": "60",
+        "prediction": "TUMOR TYPE",
+        "confidence": "0.99",
         "reviewed_comment": "average",
         "review_status": False,
         "doctor_id":2
@@ -129,7 +130,8 @@ def diagnostic_payload_updated():
     return {
         "patient_id": 1,
         "analysis_link": "some link",
-        "prediction": "70",
+        "prediction": "TUMOR TYPE",
+        "confidence": "0.99"
         "reviewed_comment": "critical",
         "review_status": False,
         "doctor_id":2

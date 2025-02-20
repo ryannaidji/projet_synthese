@@ -9,6 +9,7 @@ class Diagnostic(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
     analysis_link = db.Column(db.String(255), nullable=False)  # Date of Birth
     prediction = db.Column(db.String(255), nullable=False)
+    confidence = db.Colum(db.Float, nullable=True)
     reviewed_comment = db.Column(db.String(255), nullable=True)
     review_status = db.Column(db.Boolean,nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
