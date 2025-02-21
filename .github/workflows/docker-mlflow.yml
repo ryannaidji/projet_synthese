@@ -1,0 +1,34 @@
+name: MLflow CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - feature/mlflow
+  pull_request:
+
+jobs:
+  build-and-push-mlflow:
+    name: Build and Push MLflow Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USER }}        # ou secrets.DOCKER_USER
+          password: ${{ secrets.DOCKER_PASSWORD }} # secret obligatoire
+
+      - name: Set Image Tag
+        run: |
+          echo "MLFLOW_IMAGE=ryannaidji/mlflow:latest" >> $GITHUB_ENV
+
+      - name: Build MLflow Image
+        run: |
+          docker build -t ${{ env.MLFLOW_IMAGE }} ./mlflow
+
+      - name: Push MLflow Image
+        run: |
+          docker push ${{ env.MLFLOW_IMAGE }}
