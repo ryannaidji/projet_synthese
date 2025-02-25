@@ -47,6 +47,7 @@ jobs:
         run: |
           echo "BACKEND_IMAGE=ryannaidji/backend:latest" >> $GITHUB_ENV
           echo "FRONTEND_IMAGE=ryannaidji/frontend:latest" >> $GITHUB_ENV
+          echo "MLFLOW_IMAGE=ryannaidji/mlflow:latest" >> $GITHUB_ENV
 
       - name: Build Backend Image
         run: |
@@ -56,11 +57,18 @@ jobs:
         run: |
           docker build -t ${{ env.FRONTEND_IMAGE }} ./frontend
 
-          #      - name: Push Backend Image
-          #run: |
+      - name: Build MLflow Image
+        run: |
+          docker build -t ${{ env.MLFLOW_IMAGE }} ./mlflow
+
+      - name: Push Backend Image
+        run: |
           docker push ${{ env.BACKEND_IMAGE }}
 
-          #- name: Push Frontend Image
-          #run: |
+      - name: Push Frontend Image
+        run: |
           docker push ${{ env.FRONTEND_IMAGE }}
 
+      - name: Push MLflow Image
+        run: |
+          docker push ${{ env.MLFLOW_IMAGE }}
