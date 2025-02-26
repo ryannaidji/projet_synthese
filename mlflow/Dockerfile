@@ -13,11 +13,13 @@ RUN pip install --upgrade pip \
 
 # Empêcher TensorFlow de chercher un GPU (CUDA inutilisé)
 ENV CUDA_VISIBLE_DEVICES=""
+ENV MLFLOW_MODEL_URI="/app/model"
+ENV TF_ENABLE_ONEDNN_OPTS=0
+ENV TF_CPP_MIN_LOG_LEVEL=2
 
 # Exposer le bon port pour Render
 EXPOSE 5001
 ENV PORT=5001  
 
 
-# Lancer MLflow avec Gunicorn pour éviter les crashs mémoire
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5001", "--timeout", "90", "mlflow.pyfunc.scoring_server.wsgi:app"]
+CMD ["mlflow", "models", "serve", "-m", "/app/model", "-p", "5001", "--host", "0.0.0.0", "--no-conda"]
