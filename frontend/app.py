@@ -30,7 +30,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 #########
-BACKEND_URL="http://backend:9000"
+BACKEND_URL="https://"+os.environ.get('BACKEND_HOST')+".onrender.com"
+#BACKEND_URL="http://backend:9000"
 #BACKEND_URL="http://localhost:9000/"  
 #########
 
