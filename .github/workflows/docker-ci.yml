@@ -27,7 +27,6 @@ jobs:
 
       - name: Run Tests
         run: |
-          export PYTHONPATH=$PWD
           cd backend && pytest -v
 
   build-and-push:
