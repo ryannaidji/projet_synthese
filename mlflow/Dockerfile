@@ -11,17 +11,15 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r /app/requirements.txt
 
-# Empêcher TensorFlow de chercher un GPU (CUDA inutilisé)
+# Optimisations pour éviter les erreurs GPU et réduire la consommation mémoire
 ENV CUDA_VISIBLE_DEVICES=""
 ENV MLFLOW_MODEL_URI="/app/model"
 ENV TF_ENABLE_ONEDNN_OPTS=0
 ENV TF_CPP_MIN_LOG_LEVEL=2
 ENV MLFLOW_DISABLE_ENV_MANAGER=1
 
-# Exposer le bon port pour Render
+# Exposer le port utilisé sur Render
 EXPOSE 5001
-ENV PORT=5001  
 
-ENV GUNICORN_CMD_ARGS="--workers=1 --timeout 90 --log-level=info"
-
-CMD ["mlflow", "models", "serve", "-m", "/app/model", "-p", "$PORT", "--host", "0.0.0.0", "--no-conda"]
+# Démarrer MLflow en utilisant la variable PORT définie par Render
+CMD ["sh", "-c", "mlflow models serve -m /app/model -p ${PORT} --host 0.0.0.0 --no-conda"]

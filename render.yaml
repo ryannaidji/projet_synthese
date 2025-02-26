@@ -38,4 +38,6 @@ services:
     plan: free
     envVars:
       - key: PORT
-        value: "5001"
+        value: "5001" 
+      - key: MLFLOW_MODEL_URI
+        value: "/app/model"
