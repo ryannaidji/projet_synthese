@@ -47,7 +47,6 @@ jobs:
         run: |
           echo "BACKEND_IMAGE=ryannaidji/backend:latest" >> $GITHUB_ENV
           echo "FRONTEND_IMAGE=ryannaidji/frontend:latest" >> $GITHUB_ENV
-          echo "MLFLOW_IMAGE=ryannaidji/mlflow:latest" >> $GITHUB_ENV
 
       - name: Build Backend Image
         run: |
