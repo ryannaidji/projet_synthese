@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: backend
+    runtime: image
+    image:
+      url: docker.io/ryannaidji/backend:latest
+    region: oregon
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: MLFLOW_MODEL_URI
+        value: http://mlflow:5001/invocations
+
+  - type: web
+    name: frontend
+    runtime: image
+    image:
+      url: docker.io/ryannaidji/frontend:latest
+    region: oregon
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: BACKEND_HOST
+        fromService:
+          type: web
+          name: backend
+          property: host
+
+  - type: web
+    name: mlflow
+    runtime: image
+    image:
+      url: docker.io/ryannaidji/mlflow:latest
+    region: oregon
+    plan: free
+    envVars:
+      - key: MODEL_PORT
+        value: "5001"
