@@ -9,7 +9,7 @@ import argparse
 
 # Définition des chemins des données et du modèle
 PROCESSED_DATA_DIR = "dvc_storage/data/processed/"
-MODEL_OUTPUT_DIR = "mlflow/model/"
+MODEL_OUTPUT_DIR = "backend/app/ml_models/"
 MLFLOW_EXPERIMENT_NAME = "BrainTumor_Classification"
 mlflow.set_tracking_uri("file:mlflow/mlruns")
 
@@ -87,9 +87,13 @@ def train_model(data_dir, output_dir):
         mlflow.log_metric("val_accuracy", history.history["val_accuracy"][-1])
 
         #  Sauvegarde du modèle avec MLflow
-        mlflow.keras.save_model(model, MODEL_OUTPUT_DIR)
+        os.makedirs(output_dir, exist_ok=True)
+
+        model_path = os.path.join(output_dir, "brain_tumor_model.h5")
+        model.save(model_path)
     
-    print(f"Modèle sauvegardé dans {MODEL_OUTPUT_DIR}")
+        print(f"Modèle sauvegardé dans {model_path}")
+        
     return model
 
 #  Script principal
