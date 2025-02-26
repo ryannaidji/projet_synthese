@@ -3,11 +3,12 @@ import requests
 import numpy as np
 import cv2
 import json
+from os import environ
 
 router = APIRouter(prefix="/api/predict", tags=["Predictions"])
 
 # URL du serveur MLflow (Docker)
-MLFLOW_URL = "http://mlflow:5001/invocations"
+MLFLOW_URL = "https://"+environ.get('MLFLOW_MODEL_URI')+"/invocations.onrender.com"
 
 # Définition manuelle des classes (au lieu de class_names.pkl)
 CLASS_NAMES = {
