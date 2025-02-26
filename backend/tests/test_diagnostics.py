@@ -21,6 +21,7 @@ def test_create_get_diagnostic(test_client, diagnostic_payload, auth_headers):
     response_json = response.json()
     assert response_json["reviewed_comment"] == "average"
     assert response_json["prediction"] == "60"
+    assert response_json["confidence"] == 0.99
 
 def test_update_diagnostic(test_client, diagnostic_payload_updated, auth_headers):
     response = test_client.put("/api/diagnostics/1", json=diagnostic_payload_updated, headers=auth_headers)
