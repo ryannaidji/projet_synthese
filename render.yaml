@@ -36,3 +36,6 @@ services:
       url: docker.io/ryannaidji/mlflow:latest
     region: oregon
     plan: free
+    envVars:
+      - key: PORT
+        value: "5001"

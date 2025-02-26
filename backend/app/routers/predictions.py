@@ -7,8 +7,8 @@ from os import environ
 
 router = APIRouter(prefix="/api/predict", tags=["Predictions"])
 
-# URL du serveur MLflow (Docker)
-MLFLOW_URL = "https://"+str(environ.get('MLFLOW_MODEL_URI'))+"/invocations.onrender.com"
+# URL du serveur MLflow
+MLFLOW_URL = f"http://{environ.get('MLFLOW_MODEL_URI')}:5001/invocations"
 
 # Définition manuelle des classes (au lieu de class_names.pkl)
 CLASS_NAMES = {
