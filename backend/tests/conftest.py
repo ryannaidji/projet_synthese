@@ -116,7 +116,7 @@ def diagnostic_payload():
     return {
         "patient_id": 1,
         "analysis_link": "some link",
-        "prediction": "TUMOR TYPE",
+        "prediction": "60",
         "confidence": "0.99",
         "reviewed_comment": "average",
         "review_status": False,
@@ -130,7 +130,7 @@ def diagnostic_payload_updated():
     return {
         "patient_id": 1,
         "analysis_link": "some link",
-        "prediction": "TUMOR TYPE",
+        "prediction": "60",
         "confidence": "0.99",
         "reviewed_comment": "critical",
         "review_status": False,
