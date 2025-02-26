@@ -26,8 +26,7 @@ jobs:
           cd backend && pip install -r requirements.txt
 
       - name: Run Tests
-        run: |
-          cd backend && pytest -v
+        run: pytest -v backend/tests
 
   build-and-push:
     name: Build and Push Docker Images
