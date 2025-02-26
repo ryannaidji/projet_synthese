@@ -9,7 +9,10 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: MLFLOW_MODEL_URI
-        value: http://mlflow:5001/invocations
+        fromService:
+          type: web
+          name: mlflow
+          property: host
 
   - type: web
     name: frontend
@@ -33,6 +36,3 @@ services:
       url: docker.io/ryannaidji/mlflow:latest
     region: oregon
     plan: free
-    envVars:
-      - key: MODEL_PORT
-        value: "5001"
